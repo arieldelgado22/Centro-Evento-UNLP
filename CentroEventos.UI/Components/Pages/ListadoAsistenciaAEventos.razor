@@ -1,0 +1,80 @@
+@page "/asistencia-a-eventos"
+@rendermode InteractiveServer
+
+@using CentroEventos.Aplicacion.Entidades
+@using CentroEventos.Aplicacion.CasosDeUso
+@inject NavigationManager NavigationManager
+@inject Sesion Sesion
+@inject EventoDeportivoListarUseCase EventoDeportivoListarUseCase
+@inject ListarAsistenciaAEventoUseCase ListarAsistenciaUseCase
+
+<h3>Asistencia a Eventos Finalizados</h3>
+
+
+<div class="container mt-4">
+    <label for="eventoSelect">Seleccionar evento:</label>
+    <select id="eventoSelect" class="form-select mb-3" @onchange="EventoSeleccionadoChanged">
+        <option value="">-- Selecciona un evento --</option>
+        @foreach (var evento in eventosPasados)
+        {
+            <option value="@evento.Id">@evento.Nombre (@evento.FechaHoraInicio.ToShortDateString())</option>
+        }
+    </select>
+
+    @if (error != null)
+    {
+        <div class="alert alert-danger">@error</div>
+    }
+
+    @if (asistencias != null)
+    {
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Estado de Asistencia</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var r in asistencias)
+                {
+                    <tr>
+                        <td>@r.Persona?.Nombre</td>
+                        <td>@r.Persona?.Apellido</td>
+                        <td>@r.EstadoAsistencia</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+    List<EventoDeportivo> eventosPasados = new();
+    List<Reserva>? asistencias = null;
+    string? error;
+    int eventoSeleccionadoId;
+
+    protected override void OnInitialized()
+    {
+        eventosPasados = EventoDeportivoListarUseCase.Ejecutar(true);
+    }
+    private void EventoSeleccionadoChanged(ChangeEventArgs e)
+    {
+        error = null;
+        asistencias = null;
+
+        if (int.TryParse(e.Value?.ToString(), out eventoSeleccionadoId))
+        {
+            try
+            {
+                asistencias = ListarAsistenciaUseCase.Ejecutar(eventoSeleccionadoId);
+            }
+            catch (Exception ex)
+            {
+                error = ex.Message;
+            }
+        }
+    }
+}

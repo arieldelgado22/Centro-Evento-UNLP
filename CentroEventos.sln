@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CentroEventos.Aplicacion", "CentroEventos.Aplicacion\CentroEventos.Aplicacion.csproj", "{56C61DF8-222D-47D6-8B86-7BF765B00E43}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CentroEventos.Repositorios", "CentroEventos.Repositorios\CentroEventos.Repositorios.csproj", "{60A083E6-36EE-4076-BBC0-A42BDB98C093}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CentroEventos.UI", "CentroEventos.UI\CentroEventos.UI.csproj", "{D72E8101-2BF7-42A7-A910-6C625F1BB954}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{56C61DF8-222D-47D6-8B86-7BF765B00E43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56C61DF8-222D-47D6-8B86-7BF765B00E43}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56C61DF8-222D-47D6-8B86-7BF765B00E43}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56C61DF8-222D-47D6-8B86-7BF765B00E43}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60A083E6-36EE-4076-BBC0-A42BDB98C093}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60A083E6-36EE-4076-BBC0-A42BDB98C093}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60A083E6-36EE-4076-BBC0-A42BDB98C093}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60A083E6-36EE-4076-BBC0-A42BDB98C093}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D72E8101-2BF7-42A7-A910-6C625F1BB954}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D72E8101-2BF7-42A7-A910-6C625F1BB954}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D72E8101-2BF7-42A7-A910-6C625F1BB954}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D72E8101-2BF7-42A7-A910-6C625F1BB954}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

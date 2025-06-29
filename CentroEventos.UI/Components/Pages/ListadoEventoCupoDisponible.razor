@@ -1,0 +1,54 @@
+@page "/listado-eventos-cupoDisponible"
+@rendermode InteractiveServer
+
+@using Microsoft.AspNetCore.Components.Web
+@inject NavigationManager NavigationManager
+@inject Sesion Sesion
+@inject ListarEventosConCupoDisponibleUseCase listarEventosConCupoDisponibleUseCase
+@inject NavigationManager NavigationManager
+
+@using CentroEventos.Aplicacion.Entidades
+
+
+
+<h1>Listado de Eventos con Cupo Disponible</h1>
+
+<div class="container mt-4">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Descripcion</th>
+                <th>Fecha</th>
+                <th>Cupo Maximo</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (_lista != null && _lista.Any()){
+            @foreach (var evento in _lista)
+            {
+                <tr>
+                    <td>@evento.Nombre</td>
+                    <td>@evento.Descripcion</td>
+                    <td>@evento.FechaHoraInicio</td>
+                    <td>@evento.CupoMaximo</td>
+                </tr>
+            }
+            }else
+            {
+                <tr>
+                    <td colspan="7" class="text-center">No hay eventos registrados.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    List<EventoDeportivo> _lista = new();
+
+    protected override void OnInitialized()
+    {
+        _lista = listarEventosConCupoDisponibleUseCase.Ejecutar();
+    }
+}

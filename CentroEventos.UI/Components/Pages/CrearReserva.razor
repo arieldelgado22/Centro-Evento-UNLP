@@ -1,0 +1,182 @@
+@page "/crear-reserva"
+@rendermode InteractiveServer
+@using CentroEventos.Aplicacion.Entidades
+@inject Sesion Sesion
+@inject NavigationManager Navegador
+@inject ReservaAltaUseCase ReservaAltaUseCase
+@inject PersonaListarUseCase PersonaListarUseCase
+@inject ListarEventosConCupoDisponibleUseCase ListarEventosConCupoDisponibleUseCase
+
+@if (!Sesion.EstaLogueado())
+{
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="alert alert-info text-center">
+                    <i class="bi bi-person-lock" style="font-size: 3rem; color: #084298;"></i>
+                    <h4 class="mt-3">Acceso Restringido</h4>
+                    <p class="mb-3">Debés iniciar sesión para acceder a esta página.</p>
+                    <div class="mt-4">
+                        <a href="/" class="btn btn-primary">
+                            <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else if (!Sesion.UsuarioActual?.Permisos.Contains(Permiso.ReservaAlta) == true)
+{
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="alert alert-warning text-center">
+                    <i class="bi bi-shield-exclamation" style="font-size: 3rem; color: #856404;"></i>
+                    <h4 class="mt-3">Acceso Denegado</h4>
+                    <p class="mb-3">No tenés permisos para acceder a esta página.</p>
+                    <p class="text-muted small">
+                        Se requiere permiso: <strong>Reserva Alta</strong>
+                    </p>
+                    <div class="mt-4">
+                        <a href="/home" class="btn btn-primary">
+                            <i class="bi bi-house-door"></i> Volver al Inicio
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="mb-0">Crear Reserva</h4>
+                    </div>
+                    <div class="card-body">
+                        @if (!string.IsNullOrEmpty(_error))
+                        {
+                            <div class="alert alert-danger">@_error</div>
+                        }
+
+                        @if (!string.IsNullOrEmpty(_exito))
+                        {
+                            <div class="alert alert-success">@_exito</div>
+                        }
+
+                        <div class="mb-3">
+                            <label class="form-label">Persona Id</label>
+                            <InputSelect class="form-control" @bind-Value="_reserva.PersonaId">
+                                <option value="0" disabled selected>Seleccionar persona</option>
+                                @foreach (var persona in _personas)
+                                {
+                                    <option value="@persona.Id">@persona.Nombre @persona.Apellido - @persona.Email</option>
+                                }
+                            </InputSelect>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Evento</label>
+                            <InputSelect class="form-control" @bind-Value="_reserva.EventoDeportivoId">
+                                <option value="0" disabled selected>Eventos disponibles</option>
+                                @foreach (var evento in _eventosConCupoDisponible)
+                                {
+                                    <option value="@evento.Id">@evento.Nombre - @evento.FechaHoraInicio.ToString()</option>
+                                }
+                            </InputSelect>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-primary" @onclick="Aceptar" disabled="@_cargando">
+                                @if (_cargando)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2"></span>
+                                }
+                                Crear Reserva
+                            </button>
+                            <button class="btn btn-secondary" @onclick="Cancelar">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    Reserva _reserva = new Reserva();
+    private List<EventoDeportivo> _eventosConCupoDisponible = new List<EventoDeportivo>();
+    private string _error = string.Empty;
+    private string _exito = string.Empty;
+    private bool _cargando = false;
+    private List<Persona> _personas = new List<Persona>();
+
+    protected override void OnInitialized()
+    {
+        _personas = PersonaListarUseCase.Ejecutar();
+        _eventosConCupoDisponible = ListarEventosConCupoDisponibleUseCase.Ejecutar();
+    }
+
+    private async Task Aceptar()
+    {
+        _error = string.Empty;
+        _exito = string.Empty;
+        _cargando = true;
+
+        try
+        {
+            if (_reserva.PersonaId <= 0)
+            {
+                _error = "Debe ingresar un ID de persona válido";
+                return;
+            }
+
+            if (_reserva.EventoDeportivoId <= 0)
+            {
+                _error = "Debe ingresar un ID de evento deportivo válido";
+                return;
+            }
+
+            var idUsuario = Sesion.UsuarioActual!.Id;
+            var nuevaReserva = new Reserva(_reserva.PersonaId, _reserva.EventoDeportivoId, EstadoAsistencia.Pendiente);
+            ReservaAltaUseCase.Ejecutar(_reserva, idUsuario);
+
+            _exito = "Reserva creada exitosamente!";
+            _reserva = new Reserva();
+
+            await Task.Delay(1500);
+            Navegador.NavigateTo("/listado-reservas");
+        }
+        catch (FalloAutorizacionException ex)
+        {
+            _error = $"Error de autorización: {ex.Message}";
+        }
+        catch (Exception ex)
+        {
+            var errorCompleto = ex.ToString();
+            var errorMensaje = ex.InnerException?.Message ?? ex.Message;
+
+            Console.WriteLine($"Error completo: {errorCompleto}");
+
+            _error = $"Error al crear reserva: {errorMensaje}";
+
+            if (string.IsNullOrEmpty(errorMensaje))
+            {
+                _error = $"Error al crear reserva: {ex.GetType().Name}";
+            }
+        }
+        finally
+        {
+            _cargando = false;
+        }
+    }
+
+    private void Cancelar()
+    {
+        Navegador.NavigateTo("/home");
+    }
+}

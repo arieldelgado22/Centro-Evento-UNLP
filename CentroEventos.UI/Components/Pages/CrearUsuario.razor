@@ -1,0 +1,151 @@
+@page "/crear-usuario"
+@rendermode InteractiveServer
+
+@inject NavigationManager Navegador
+@using CentroEventos.Aplicacion.Entidades
+@inject UsuarioAltaUseCase UsuarioAltaUseCase
+
+<div class="container mt-5">
+   <div class="row justify-content-center">
+      <div class="col-md-6">
+         <div class="card">
+            <div class="card-header">
+               <h4 class="mb-0">Crear Usuario</h4>
+            </div>
+            <div class="card-body">
+               @if (!string.IsNullOrEmpty(_error))
+               {
+               <div class="alert alert-danger">@_error</div>
+               }
+               @if (!string.IsNullOrEmpty(_exito))
+               {
+               <div class="alert alert-success">@_exito</div>
+               }
+               <div class="mb-3">
+                  <label class="form-label">Nombre</label>
+                  <input type="text" class="form-control" @bind="_usuario.Nombre" placeholder="Ingresa tu nombre">
+               </div>
+               <div class="mb-3">
+                  <label class="form-label">Apellido</label>
+                  <input type="text" class="form-control" @bind="_usuario.Apellido" placeholder="Ingresa tu apellido">
+               </div>
+               <div class="mb-3">
+                  <label class="form-label">Email</label>
+                  <input type="email"
+                     class="form-control"
+                     @bind="_usuario.Email"
+                     placeholder="correo@ejemplo.com"
+                     name="nuevocorreo812"
+                     id="nuevocorreo812"
+                     autocomplete="off" />
+               </div>
+               <div class="mb-3">
+                  <label class="form-label">Contraseña</label>
+                  <input type="password"
+                     class="form-control"
+                     @bind="Contraseña"
+                     placeholder="Mínimo 6 caracteres"
+                     name="clave812"
+                     id="clave812"
+                     autocomplete="new-password" />
+               </div>
+               <div class="mb-3">
+                  <label class="form-label">Confirmar Contraseña</label>
+                  <input type="password"
+                     class="form-control"
+                     @bind="ConfirmarContraseña"
+                     placeholder="Repite la contraseña"
+                     name="claveConfirmada812"
+                     id="claveConfirmada812"
+                     autocomplete="new-password" />
+               </div>
+               <div class="d-grid gap-2">
+                  <button class="btn btn-primary" @onclick="Aceptar" disabled="@_cargando">
+                  @if (_cargando)
+                  {
+                  <span class="spinner-border spinner-border-sm me-2"></span>
+                  }
+                  Crear Usuario
+                  </button>
+                  <button class="btn btn-secondary" @onclick="Cancelar">Cancelar</button>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+
+@code {
+    private Usuario _usuario = new Usuario();
+    private string? Contraseña;
+    private string? ConfirmarContraseña;
+    private string _error = string.Empty;
+    private string _exito = string.Empty;
+    private bool _cargando = false;
+
+    private async Task Aceptar()
+    {
+        _error = string.Empty;
+        _exito = string.Empty;
+
+        // Validación básica
+        if (string.IsNullOrWhiteSpace(_usuario.Nombre) || 
+            string.IsNullOrWhiteSpace(_usuario.Apellido) ||
+            string.IsNullOrWhiteSpace(_usuario.Email) ||
+            string.IsNullOrWhiteSpace(Contraseña))
+        {
+            _error = "Todos los campos son obligatorios";
+            return;
+        }
+
+        if (Contraseña != ConfirmarContraseña)
+        {
+            _error = "Las contraseñas no coinciden";
+            return;
+        }
+
+        if (Contraseña.Length < 6)
+        {
+            _error = "La contraseña debe tener al menos 6 caracteres";
+            return;
+        }
+
+        _cargando = true;
+        
+        try
+        {
+            _usuario.EstablecerContraseña(Contraseña);
+            UsuarioAltaUseCase.Ejecutar(_usuario);
+            
+            _exito = "¡Usuario creado exitosamente!";
+            
+           await Task.Delay(500);
+            _usuario = new Usuario();
+            Contraseña = string.Empty;
+            ConfirmarContraseña = string.Empty;
+        }
+        
+         catch (DuplicadoException ex)
+        {
+            _error = $"Error de duplicacion: {ex.Message}";
+        }
+          catch (FalloAutorizacionException ex)
+        {
+            _error = $"Error de autorización: {ex.Message}";
+        }
+
+        catch (Exception ex)
+        {
+            _error = "Error al crear usuario: " + ex.Message;
+        }
+        finally
+        {
+            _cargando = false;
+        }
+    }
+
+    private void Cancelar()
+    {
+        Navegador.NavigateTo("/");
+    }
+}

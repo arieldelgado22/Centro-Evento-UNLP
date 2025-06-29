@@ -1,0 +1,225 @@
+@page "/listado-reservas"
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager
+@inject Sesion Sesion
+@inject ReservaListarUseCase reservaListarUseCase
+@inject ReservaBajaUseCase reservaBajaUseCase
+@inject ReservaModificacionUseCase reservaModificacionUseCase
+@inject NavigationManager NavigationManager
+
+@using CentroEventos.Aplicacion.Servicios
+@using CentroEventos.Aplicacion.Entidades
+
+
+
+<h1>Listado de Reserva</h1>
+<div class="container mt-4">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Fecha alta Reserva</th>
+                <th>Nombre </th>
+                <th>Apellido</th>
+                <th>Evento Deportivo</th>
+                <th>Fecha</th>
+                <th>Cupo Maximo</th>
+                <th>Duracion de Horas</th>
+                <th>Estado asistencia</th>
+                @if (Sesion.UsuarioActual?.Permisos.Contains(Permiso.ReservaModificacion) == true ||
+                     Sesion.UsuarioActual?.Permisos.Contains(Permiso.ReservaBaja) == true)
+                {
+                    <th>Acción</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @if (_lista != null && _lista.Any())
+            {
+                @foreach (var rev in _lista)
+                {
+                    <tr>
+                        <td>@rev.FechaAltaReserva</td>
+                        <td>@rev.Persona?.Nombre</td>
+                        <td>@rev.Persona?.Apellido</td>
+                        <td>@rev.EventoDeportivo?.Nombre</td>
+                        <td>@rev.EventoDeportivo?.FechaHoraInicio</td>
+                        <td>@rev.EventoDeportivo?.CupoMaximo</td>
+                        <td>@rev.EventoDeportivo?.DuracionHoras</td>
+                        <td>@rev.EstadoAsistencia</td>
+                      @if (Sesion.UsuarioActual?.Permisos.Contains(Permiso.ReservaModificacion) == true ||
+                            Sesion.UsuarioActual?.Permisos.Contains(Permiso.ReservaBaja) == true)
+                        {
+                        <td>
+                        <div class="d-flex gap-2">
+                    @if (Sesion.UsuarioActual?.Permisos.Contains(Permiso.ReservaModificacion) == true)
+                        {
+                        <button class="btn btn-sm btn-primary" @onclick="() => AbrirModalEditar(rev)">Editar</button>
+                        }
+                    @if (Sesion.UsuarioActual?.Permisos.Contains(Permiso.ReservaBaja) == true)
+                        {
+                        <button class="btn btn-sm btn-danger" @onclick="() => MostrarModalEliminar(rev)">Eliminar</button>
+                        }
+                        </div>
+                        </td>
+                        }
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="9" class="text-center">No hay reservas registradas.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @if (reservaAEliminar != null)
+    {
+        <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirmar eliminación</h5>
+                        <button type="button" class="btn-close" @onclick="CancelarEliminacion"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            ¿Estás seguro de que querés eliminar la reserva de
+                            <strong>@reservaAEliminar.Persona?.Nombre</strong> en el evento
+                            <strong>@reservaAEliminar.EventoDeportivo?.Nombre</strong>?
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-danger" @onclick="EliminarConfirmado">Eliminar</button>
+                        <button class="btn btn-secondary" @onclick="CancelarEliminacion">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (reservaSeleccionada != null)
+    {
+        <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Editar Reserva</h5>
+                        <button type="button" class="btn-close" @onclick="CerrarModal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-2">
+                            <label>Estado Asistencia</label>
+                            <select class="form-control" @bind="reservaSeleccionada.EstadoAsistencia">
+                                <option value="Pendiente">Pendiente</option>
+                                <option value="Presente">Presente</option>
+                                <option value="Ausente">Ausente</option>
+                            </select>
+                        </div>
+                        @if (!string.IsNullOrEmpty(mensajeErrorModal))
+                        {
+                            <div class="alert alert-danger">@mensajeErrorModal</div>
+                        }
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" @onclick="GuardarCambios">Guardar</button>
+                        <button class="btn btn-secondary" @onclick="CerrarModal">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (Sesion.UsuarioActual?.Permisos.Contains(Permiso.ReservaAlta) == true)
+    {
+        <a class="btn btn-sm btn-primary" href="/crear-reserva">Agregar Reserva</a>
+    }
+</div>
+
+@code {
+    private List<Reserva> _lista = new();
+    private Reserva? reservaSeleccionada;
+    private string? mensajeErrorModal;
+    private Reserva? reservaAEliminar;
+
+    protected override void OnInitialized()
+    {
+        _lista = reservaListarUseCase.Ejecutar() ?? new List<Reserva>();
+    }
+
+    private void AbrirModalEditar(Reserva reserva)
+    {
+        reservaSeleccionada = new Reserva
+        {
+            Id = reserva.Id,
+            EstadoAsistencia = reserva.EstadoAsistencia,
+            FechaAltaReserva = reserva.FechaAltaReserva,
+            PersonaId = reserva.PersonaId,
+            EventoDeportivoId = reserva.EventoDeportivoId,
+        };
+        mensajeErrorModal = null;
+    }
+
+    private void CerrarModal()
+    {
+        reservaSeleccionada = null;
+        mensajeErrorModal = null;
+    }
+
+    private void GuardarCambios()
+    {
+        try
+        {
+            var idUsuario = Sesion.UsuarioActual?.Id ?? 0;
+            reservaModificacionUseCase.Ejecutar(reservaSeleccionada!, idUsuario);
+            _lista = reservaListarUseCase.Ejecutar() ?? new List<Reserva>();
+            reservaSeleccionada = null;
+        }
+          catch (FalloAutorizacionException ex)
+        {
+            mensajeErrorModal = $"Error de autorización: {ex.Message}";
+        }
+        catch (Exception)
+        {
+            mensajeErrorModal = "Error al guardar los cambios.";
+        }
+    }
+
+    private void MostrarModalEliminar(Reserva reserva)
+    {
+        reservaAEliminar = reserva;
+    }
+
+    private void CancelarEliminacion()
+    {
+        reservaAEliminar = null;
+    }
+
+    private void EliminarConfirmado()
+    {
+        if (reservaAEliminar != null)
+        {
+            EliminarReserva(reservaAEliminar.Id);
+            reservaAEliminar = null;
+        }
+    }
+
+    private void EliminarReserva(int id)
+    {
+        try
+        {
+            var idUsuario = Sesion.UsuarioActual?.Id ?? 0;
+            reservaBajaUseCase.Ejecutar(id, idUsuario);
+            _lista = reservaListarUseCase.Ejecutar();
+        }
+          catch (FalloAutorizacionException ex)
+        {
+            mensajeErrorModal = $"Error de autorización: {ex.Message}";
+        }
+        catch (Exception)
+        {
+            mensajeErrorModal = "Error al eliminar la reserva.";
+        }
+    }
+}

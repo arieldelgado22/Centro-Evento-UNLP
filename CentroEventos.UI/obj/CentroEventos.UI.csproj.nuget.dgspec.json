@@ -1,0 +1,202 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\Laureano\\Documents\\ENTREGA FINAL\\CentroEventos\\CentroEventos.UI\\CentroEventos.UI.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\Laureano\\Documents\\ENTREGA FINAL\\CentroEventos\\CentroEventos.Aplicacion\\CentroEventos.Aplicacion.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\Laureano\\Documents\\ENTREGA FINAL\\CentroEventos\\CentroEventos.Aplicacion\\CentroEventos.Aplicacion.csproj",
+        "projectName": "CentroEventos.Aplicacion",
+        "projectPath": "C:\\Users\\Laureano\\Documents\\ENTREGA FINAL\\CentroEventos\\CentroEventos.Aplicacion\\CentroEventos.Aplicacion.csproj",
+        "packagesPath": "C:\\Users\\Laureano\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Laureano\\Documents\\ENTREGA FINAL\\CentroEventos\\CentroEventos.Aplicacion\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Laureano\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.408/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\Laureano\\Documents\\ENTREGA FINAL\\CentroEventos\\CentroEventos.Repositorios\\CentroEventos.Repositorios.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\Laureano\\Documents\\ENTREGA FINAL\\CentroEventos\\CentroEventos.Repositorios\\CentroEventos.Repositorios.csproj",
+        "projectName": "CentroEventos.Repositorios",
+        "projectPath": "C:\\Users\\Laureano\\Documents\\ENTREGA FINAL\\CentroEventos\\CentroEventos.Repositorios\\CentroEventos.Repositorios.csproj",
+        "packagesPath": "C:\\Users\\Laureano\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Laureano\\Documents\\ENTREGA FINAL\\CentroEventos\\CentroEventos.Repositorios\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Laureano\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "C:\\Users\\Laureano\\Documents\\ENTREGA FINAL\\CentroEventos\\CentroEventos.Aplicacion\\CentroEventos.Aplicacion.csproj": {
+                "projectPath": "C:\\Users\\Laureano\\Documents\\ENTREGA FINAL\\CentroEventos\\CentroEventos.Aplicacion\\CentroEventos.Aplicacion.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.EntityFrameworkCore.Sqlite": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.408/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\Laureano\\Documents\\ENTREGA FINAL\\CentroEventos\\CentroEventos.UI\\CentroEventos.UI.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\Laureano\\Documents\\ENTREGA FINAL\\CentroEventos\\CentroEventos.UI\\CentroEventos.UI.csproj",
+        "projectName": "CentroEventos.UI",
+        "projectPath": "C:\\Users\\Laureano\\Documents\\ENTREGA FINAL\\CentroEventos\\CentroEventos.UI\\CentroEventos.UI.csproj",
+        "packagesPath": "C:\\Users\\Laureano\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Laureano\\Documents\\ENTREGA FINAL\\CentroEventos\\CentroEventos.UI\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Laureano\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "C:\\Users\\Laureano\\Documents\\ENTREGA FINAL\\CentroEventos\\CentroEventos.Aplicacion\\CentroEventos.Aplicacion.csproj": {
+                "projectPath": "C:\\Users\\Laureano\\Documents\\ENTREGA FINAL\\CentroEventos\\CentroEventos.Aplicacion\\CentroEventos.Aplicacion.csproj"
+              },
+              "C:\\Users\\Laureano\\Documents\\ENTREGA FINAL\\CentroEventos\\CentroEventos.Repositorios\\CentroEventos.Repositorios.csproj": {
+                "projectPath": "C:\\Users\\Laureano\\Documents\\ENTREGA FINAL\\CentroEventos\\CentroEventos.Repositorios\\CentroEventos.Repositorios.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.408/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

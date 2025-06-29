@@ -1,0 +1,95 @@
+is_global = true
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = CentroEventos.UI
+build_property.RootNamespace = CentroEventos.UI
+build_property.ProjectDir = C:\Users\Laureano\Documents\ENTREGA FINAL\CentroEventos\CentroEventos.UI\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 8.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = C:\Users\Laureano\Documents\ENTREGA FINAL\CentroEventos\CentroEventos.UI
+build_property._RazorSourceGeneratorDebug = 
+
+[C:/Users/Laureano/Documents/ENTREGA FINAL/CentroEventos/CentroEventos.UI/Components/App.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBcHAucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Laureano/Documents/ENTREGA FINAL/CentroEventos/CentroEventos.UI/Components/Pages/ControlAcceso.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDb250cm9sQWNjZXNvLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Laureano/Documents/ENTREGA FINAL/CentroEventos/CentroEventos.UI/Components/Pages/CrearEventoDeportivo.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDcmVhckV2ZW50b0RlcG9ydGl2by5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Laureano/Documents/ENTREGA FINAL/CentroEventos/CentroEventos.UI/Components/Pages/CrearPersona.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDcmVhclBlcnNvbmEucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Laureano/Documents/ENTREGA FINAL/CentroEventos/CentroEventos.UI/Components/Pages/CrearReserva.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDcmVhclJlc2VydmEucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Laureano/Documents/ENTREGA FINAL/CentroEventos/CentroEventos.UI/Components/Pages/CrearUsuario.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDcmVhclVzdWFyaW8ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Laureano/Documents/ENTREGA FINAL/CentroEventos/CentroEventos.UI/Components/Pages/Error.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFcnJvci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Laureano/Documents/ENTREGA FINAL/CentroEventos/CentroEventos.UI/Components/Pages/Home.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xIb21lLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Laureano/Documents/ENTREGA FINAL/CentroEventos/CentroEventos.UI/Components/Pages/ListadoAsistenciaAEventos.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xMaXN0YWRvQXNpc3RlbmNpYUFFdmVudG9zLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Laureano/Documents/ENTREGA FINAL/CentroEventos/CentroEventos.UI/Components/Pages/ListadoEventoCupoDisponible.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xMaXN0YWRvRXZlbnRvQ3Vwb0Rpc3BvbmlibGUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Laureano/Documents/ENTREGA FINAL/CentroEventos/CentroEventos.UI/Components/Pages/ListadoEventos.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xMaXN0YWRvRXZlbnRvcy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Laureano/Documents/ENTREGA FINAL/CentroEventos/CentroEventos.UI/Components/Pages/ListadoPersonas.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xMaXN0YWRvUGVyc29uYXMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Laureano/Documents/ENTREGA FINAL/CentroEventos/CentroEventos.UI/Components/Pages/ListadoReserva.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xMaXN0YWRvUmVzZXJ2YS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Laureano/Documents/ENTREGA FINAL/CentroEventos/CentroEventos.UI/Components/Pages/Login.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xMb2dpbi5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Laureano/Documents/ENTREGA FINAL/CentroEventos/CentroEventos.UI/Components/Pages/MiUsuario.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xNaVVzdWFyaW8ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Laureano/Documents/ENTREGA FINAL/CentroEventos/CentroEventos.UI/Components/Routes.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xSb3V0ZXMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Laureano/Documents/ENTREGA FINAL/CentroEventos/CentroEventos.UI/_Imports.razor]
+build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Laureano/Documents/ENTREGA FINAL/CentroEventos/CentroEventos.UI/Components/Layout/MainLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTWFpbkxheW91dC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-uopeu9fc6a
+
+[C:/Users/Laureano/Documents/ENTREGA FINAL/CentroEventos/CentroEventos.UI/Components/Layout/NavMenu.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTmF2TWVudS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-fpokdk2a72

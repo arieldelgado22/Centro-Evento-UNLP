@@ -1,0 +1,233 @@
+﻿@page "/mi-usuario"
+@rendermode InteractiveServer
+@using CentroEventos.Aplicacion.Entidades
+@using CentroEventos.Aplicacion.Enumerativos
+@inject NavigationManager NavigationManager
+@inject Sesion Sesion
+@inject UsuarioListarUseCase UsuarioListarUseCase
+@inject UsuarioModificacionUseCase UsuarioModificacionUseCase
+@inject UsuarioObtenerPorIdUseCase usuarioObtenerPorIdUseCase
+
+<h1>Mi Usuario</h1>
+
+@if (Sesion.UsuarioActual != null)
+{
+    @if (!string.IsNullOrEmpty(mensajeError))
+    {
+        <div class="alert alert-danger">@mensajeError</div>
+    }
+
+    @if (!string.IsNullOrEmpty(mensajeExito))
+    {
+        <div class="alert alert-success">@mensajeExito</div>
+    }
+
+    <div class="container mt-4">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Email</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>@_usuario?.Nombre</td>
+                    <td>@_usuario?.Apellido</td>
+                    <td>@_usuario?.Email</td>
+                    <td>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-primary" @onclick="() => AbrirModalEditar(_usuario)">Editar</button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        @if (usuarioSeleccionado != null)
+        {
+            <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Editar Mi Perfil</h5>
+                            <button type="button" class="btn-close" @onclick="CerrarModal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label>Nombre</label>
+                                <input class="form-control" @bind="usuarioSeleccionado.Nombre" />
+                            </div>
+                            <div class="mb-3">
+                                <label>Apellido</label>
+                                <input class="form-control" @bind="usuarioSeleccionado.Apellido" />
+                            </div>
+                            <div class="mb-3">
+                                <label>Email</label>
+                                <input class="form-control" @bind="usuarioSeleccionado.Email" />
+                            </div>
+                            <div class="mb-3">
+                                <label>Nueva Contraseña (opcional)</label>
+                                <input class="form-control" type="password" @bind="_nuevaPassword"
+                                       placeholder="Dejar vacío para mantener la contraseña actual"
+                                       autocomplete="new-password" />
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(mensajeErrorModal))
+                            {
+                                <div class="alert alert-danger mt-3">@mensajeErrorModal</div>
+                            }
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-primary" @onclick="GuardarCambios" disabled="@_guardando">
+                                @if (_guardando)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2"></span>
+                                }
+                                Guardar
+                            </button>
+                            <button class="btn btn-secondary" @onclick="CerrarModal">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    @* Usuario no logueado *@
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="alert alert-info text-center">
+                    <i class="bi bi-person-lock" style="font-size: 3rem; color: #084298;"></i>
+                    <h4 class="mt-3">Acceso Restringido</h4>
+                    <p class="mb-3">Debés iniciar sesión para acceder a esta página.</p>
+                    <div class="mt-4">
+                        <a href="/" class="btn btn-primary">
+                            <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    Usuario? _usuario = new();
+    Usuario? usuarioSeleccionado;
+    string? mensajeError;
+    string? mensajeExito;
+    string? mensajeErrorModal;
+    string? _nuevaPassword;
+    bool _guardando = false;
+
+    protected override void OnInitialized()
+    {
+        if (Sesion.UsuarioActual != null)
+        {
+            _usuario = usuarioObtenerPorIdUseCase.Ejecutar(Sesion.UsuarioActual.Id);
+        }
+    }
+
+    private void AbrirModalEditar(Usuario? u)
+    {
+        if (u != null)
+        {
+            usuarioSeleccionado = new Usuario
+            {
+                Id = u.Id,
+                Nombre = u.Nombre,
+                Apellido = u.Apellido,
+                Email = u.Email,
+            };
+
+            
+            foreach (var permiso in u.Permisos)
+            {
+                usuarioSeleccionado.AgregarPermiso(permiso);
+            }
+
+            _nuevaPassword = string.Empty;
+            mensajeErrorModal = null;
+        }
+    }
+
+    private void CerrarModal()
+    {
+        usuarioSeleccionado = null;
+        mensajeErrorModal = null;
+        _nuevaPassword = string.Empty;
+    }
+
+    private async Task GuardarCambios()
+    {
+        if (usuarioSeleccionado == null || Sesion.UsuarioActual == null)
+            return;
+
+        _guardando = true;
+        mensajeErrorModal = null;
+        mensajeError = null;
+        mensajeExito = null;
+
+        try
+        {
+
+            if (usuarioSeleccionado.Id != Sesion.UsuarioActual.Id)
+            {
+                mensajeErrorModal = "No tienes permisos para editar este usuario.";
+                return;
+            }
+
+
+            if (!string.IsNullOrWhiteSpace(_nuevaPassword))
+            {
+                if (_nuevaPassword.Length < 6)
+                {
+                    mensajeErrorModal = "La contraseña debe tener al menos 6 caracteres.";
+                    return;
+                }
+                usuarioSeleccionado.EstablecerContraseña(_nuevaPassword);
+            }
+
+            // Guardar cambios
+            UsuarioModificacionUseCase.Ejecutar(usuarioSeleccionado, Sesion.UsuarioActual.Id);
+
+            // Actualizar el usuario en sesión y en la vista
+            var usuarioActualizado = usuarioObtenerPorIdUseCase.Ejecutar(Sesion.UsuarioActual.Id);
+            Sesion.ActualizarUsuario(usuarioActualizado);
+            _usuario = usuarioActualizado;
+
+            // Cerrar modal y mostrar mensaje de éxito
+            usuarioSeleccionado = null;
+            mensajeExito = "Usuario actualizado correctamente.";
+
+            await Task.Delay(100);
+            StateHasChanged();
+        }
+        catch (FalloAutorizacionException ex)
+        {
+            mensajeErrorModal = $"Error de autorización: {ex.Message}";
+        }
+        catch (DuplicadoException ex)
+        {
+            mensajeErrorModal = $"Error de validación: {ex.Message}";
+        }
+        catch (OperacionInvalidaException ex)
+        {
+            mensajeErrorModal = ex.Message;
+        }
+        catch (Exception ex)
+        {
+            mensajeErrorModal = $"Error al modificar usuario: {ex.Message}";
+        }
+        finally
+        {
+            _guardando = false;
+        }
+    }
+}

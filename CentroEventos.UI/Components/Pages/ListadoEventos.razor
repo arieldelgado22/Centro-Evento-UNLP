@@ -1,0 +1,283 @@
+@page "/listado-eventos"
+@rendermode InteractiveServer
+
+@using Microsoft.AspNetCore.Components.Web
+@using CentroEventos.Aplicacion.Entidades
+
+@inject NavigationManager NavigationManager
+@inject Sesion Sesion
+@inject EventoDeportivoListarUseCase EventoDeportivoListarUseCase
+@inject EventoDeportivoModificacionUseCase EventoDeportivoModificacionUseCase
+@inject EventoDeportivoBajaUseCase EventoDeportivoBajaUseCase
+@inject PersonaListarUseCase PersonaListarUseCase
+
+
+
+<h1>Listado de Eventos</h1>
+
+@if (!string.IsNullOrEmpty(mensajeError))
+{
+    <div class="alert alert-danger">@mensajeError</div>
+}
+
+<div class="container mt-4">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Descripcion</th>
+                <th>Fecha y hora</th>
+                <th>Duración (horas)</th>
+                <th>Cupo máximo</th>
+                <th>Mail del responsable</th>
+                @if (Sesion.UsuarioActual?.Permisos.Contains(Permiso.EventoModificacion) == true ||
+                     Sesion.UsuarioActual?.Permisos.Contains(Permiso.EventoBaja) == true)
+                {
+                    <th>Acción</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @if (_lista != null && _lista.Any())
+            {
+                @foreach (var evento in _lista)
+                {
+                    <tr>
+                        <td>@evento.Nombre</td>
+                        <td>@evento.Descripcion</td>
+                        <td>@evento.FechaHoraInicio</td>
+                        <td>@evento.DuracionHoras</td>
+                        <td>@evento.CupoMaximo</td>
+                        <td>@evento.Persona?.Email</td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                @if (Sesion.UsuarioActual?.Permisos.Contains(Permiso.EventoModificacion) == true)
+                                {
+                                    <a class="btn btn-sm btn-primary" @onclick="() => AbrirModalEditar(evento)">Editar</a>
+                                }
+
+                                @if (Sesion.UsuarioActual?.Permisos.Contains(Permiso.EventoBaja) == true)
+                                {
+                                    <button class="btn btn-sm btn-danger" @onclick="() => MostrarModalEliminar(evento)">Eliminar</button>
+                                }
+                                </div>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="7" class="text-center">No hay eventos registrados.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+@if (Sesion.UsuarioActual?.Permisos.Contains(Permiso.EventoAlta) == true)
+{
+    <a class="btn btn-sm btn-primary mb-3" href="/crear-evento">Agregar Evento</a>
+}
+@if (eventoParaEliminar != null)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmar eliminación</h5>
+                    <button type="button" class="btn-close" @onclick="CancelarEliminacion"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Estás seguro de que querés eliminar el evento "<strong>@eventoParaEliminar.Nombre</strong>"?</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger" @onclick="EliminarConfirmado">Eliminar</button>
+                    <button class="btn btn-secondary" @onclick="CancelarEliminacion">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (eventoSeleccionado != null)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Evento</h5>
+                    <button type="button" class="btn-close" @onclick="CerrarModal"></button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" class="form-control" @bind="eventoSeleccionado.Nombre" placeholder="Ingresa tu nombre">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Descripción</label>
+                        <input type="text" class="form-control" @bind="eventoSeleccionado.Descripcion" placeholder="Ingresa la descripción">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Fecha del evento</label>
+                        <input type="date" class="form-control" placeholder="dd/mm/aaaa" @bind="_fecha" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Hora del evento</label>
+                        <input type="time" class="form-control" placeholder="hh:mm" @bind="_hora" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Duración (horas)</label>
+                        <input type="number" class="form-control" @bind="eventoSeleccionado.DuracionHoras" placeholder="Ingresa la duración en horas">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Cupo</label>
+                        <input type="number" class="form-control" @bind="eventoSeleccionado.CupoMaximo" placeholder="Ingresa el cupo máximo">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Responsable</label>
+                        <InputSelect class="form-control" @bind-Value="eventoSeleccionado.PersonaId">
+                            <option value="0" disabled selected>Seleccionar responsable</option>
+                            @foreach (var persona in _personas)
+                            {
+                                <option value="@persona.Id">@persona.Email</option>
+                            }
+                        </InputSelect>
+                    </div>
+                    @if (!string.IsNullOrEmpty(mensajeErrorModal))
+                    {
+                        <div class="alert alert-danger">@mensajeErrorModal</div>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" @onclick="GuardarCambios">Guardar</button>
+                    <button class="btn btn-secondary" @onclick="CerrarModal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+</div>
+
+@code {
+    EventoDeportivo? eventoSeleccionado;
+    EventoDeportivo? eventoParaEliminar;
+    string? mensajeError;
+    string? mensajeErrorModal;
+    private DateTime? _fecha = null;
+    private TimeOnly? _hora = null;
+    List<Persona> _personas = new();
+    List<EventoDeportivo> _lista = new();
+
+    protected override void OnInitialized()
+    {
+        _personas = PersonaListarUseCase.Ejecutar();
+        _lista = EventoDeportivoListarUseCase.Ejecutar();
+    }
+
+    private void MostrarModalEliminar(EventoDeportivo eventoDeportivo)
+    {
+        eventoParaEliminar = eventoDeportivo;
+    }
+
+    private void AbrirModalEditar(EventoDeportivo evento)
+    {
+        eventoSeleccionado = new EventoDeportivo
+        {
+            Id = evento.Id,
+            Nombre = evento.Nombre,
+            Descripcion = evento.Descripcion,
+            FechaHoraInicio = evento.FechaHoraInicio,
+            DuracionHoras = evento.DuracionHoras,
+            PersonaId = evento.PersonaId,
+            CupoMaximo = evento.CupoMaximo
+        };
+
+        _fecha = evento.FechaHoraInicio.Date;
+        _hora = TimeOnly.FromDateTime(evento.FechaHoraInicio);
+
+        mensajeErrorModal = null;
+    }
+
+    private void CerrarModal()
+    {
+        eventoSeleccionado = null;
+        mensajeErrorModal = null;
+    }
+
+    private void GuardarCambios()
+    {
+        mensajeErrorModal = null;
+
+        try
+        {
+            if (_fecha.HasValue && _hora.HasValue)
+            {
+                eventoSeleccionado!.FechaHoraInicio = _fecha.Value.Add(_hora.Value.ToTimeSpan());
+            }
+            var idUsuario = Sesion.UsuarioActual?.Id ?? 0;
+            EventoDeportivoModificacionUseCase.Ejecutar(eventoSeleccionado!, idUsuario);
+            _lista = EventoDeportivoListarUseCase.Ejecutar();
+            eventoSeleccionado = null;
+        }
+        catch (ValidacionException ex)
+        {
+            mensajeErrorModal = $"Error de validación: {ex.Message}";
+        }
+        catch (OperacionInvalidaException ex)
+        {
+            mensajeErrorModal = $"Operación inválida: {ex.Message}";
+        }
+          catch (FalloAutorizacionException ex)
+        {
+            mensajeErrorModal = $"Error de autorización: {ex.Message}";
+        }
+        catch (Exception)
+        {
+            mensajeErrorModal = "Error inesperado al modificar el evento.";
+        }
+    }
+
+    private void CancelarEliminacion()
+    {
+        eventoParaEliminar = null;
+    }
+
+    private void EliminarConfirmado()
+    {
+        if (eventoParaEliminar != null)
+        {
+            EliminarEvento(eventoParaEliminar.Id);
+            eventoParaEliminar = null;
+        }
+    }
+
+    private void EliminarEvento(int id)
+    {
+        mensajeError = null;
+        try
+        {
+            var idUsuario = Sesion.UsuarioActual?.Id ?? 0;
+            EventoDeportivoBajaUseCase.Ejecutar(id, idUsuario);
+            _lista = EventoDeportivoListarUseCase.Ejecutar();
+        }
+        catch (FalloAutorizacionException ex)
+        {
+            mensajeError = $"Error de autorización: {ex.Message}";
+        }
+        catch (OperacionInvalidaException ex)
+        {
+            mensajeError = $"Operación inválida: {ex.Message}";
+        }
+        catch (Exception)
+        {
+            mensajeError = "Error inesperado al eliminar el evento.";
+        }
+    }
+}

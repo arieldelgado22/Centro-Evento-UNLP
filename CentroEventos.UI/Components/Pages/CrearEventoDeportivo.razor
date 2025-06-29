@@ -1,0 +1,209 @@
+@page "/crear-evento"
+@rendermode InteractiveServer
+
+@inject Sesion Sesion
+@inject NavigationManager Navegador
+@using CentroEventos.Aplicacion.Entidades
+@inject EventoDeportivoAltaUseCase EventoDeportivoAltaUseCase
+@inject PersonaListarUseCase PersonaListarUseCase
+
+
+
+@if (!Sesion.EstaLogueado())
+{
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="alert alert-info text-center">
+                    <i class="bi bi-person-lock" style="font-size: 3rem; color: #084298;"></i>
+                    <h4 class="mt-3">Acceso Restringido</h4>
+                    <p class="mb-3">Debés iniciar sesión para acceder a esta página.</p>
+                    <div class="mt-4">
+                        <a href="/" class="btn btn-primary">
+                            <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else if (!Sesion.UsuarioActual?.Permisos.Contains(Permiso.EventoAlta) == true)
+{
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="alert alert-warning text-center">
+                    <i class="bi bi-shield-exclamation" style="font-size: 3rem; color: #856404;"></i>
+                    <h4 class="mt-3">Acceso Denegado</h4>
+                    <p class="mb-3">No tenés permisos para acceder a esta página.</p>
+                    <p class="text-muted small">
+                        Se requiere permiso: <strong>Persona Alta</strong>
+                    </p>
+                    <div class="mt-4">
+                        <a href="/home" class="btn btn-primary">
+                            <i class="bi bi-house-door"></i> Volver al Inicio
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">Crear Evento Deportivo</h4>
+                </div>
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(_error))
+                    {
+                        <div class="alert alert-danger">@_error</div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(_exito))
+                    {
+                        <div class="alert alert-success">@_exito</div>
+                    }
+
+                    <div class="mb-3">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" class="form-control" @bind="_evento.Nombre" placeholder="Ingresa tu nombre">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Descripción</label>
+                        <input type="text" class="form-control" @bind="_evento.Descripcion" placeholder="Ingresa la descripción">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Fecha del evento</label>
+                        <input type="date"
+                               class="form-control"
+                               placeholder="dd/mm/aaaa"
+                               @bind="_fecha" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Hora del evento</label>
+                        <input type="time"
+                               class="form-control"
+                               placeholder="hh:mm"
+                               @bind="_hora" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Duración (horas)</label>
+                        <input type="number" class="form-control" @bind="_evento.DuracionHoras" placeholder="Ingresa la duración en horas">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Cupo</label>
+                        <input type="number" class="form-control" @bind="_evento.CupoMaximo" placeholder="Ingresa el cupo máximo">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Responsable</label>
+                        <InputSelect class="form-control" @bind-Value="_evento.PersonaId">
+                            <option value="0" disabled selected>Seleccionar responsable</option>
+                            @foreach (var persona in _personas)
+                            {
+                                <option value="@persona.Id">@persona.Nombre @persona.Apellido - @persona.Email</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary" @onclick="Aceptar" disabled="@_cargando">
+                            @if (_cargando)
+                            {
+                                <span class="spinner-border spinner-border-sm me-2"></span>
+                            }
+                            Crear Evento
+                        </button>
+                        <button class="btn btn-secondary" @onclick="Cancelar">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+}
+
+@code {
+    List<Persona> _personas = new();
+    EventoDeportivo _evento = new();
+
+    private DateTime? _fecha = null;
+    private TimeOnly? _hora = null;
+
+    private string _error = string.Empty;
+    private string _exito = string.Empty;
+    private bool _cargando = false;
+
+    protected override void OnInitialized()
+    {
+        _personas = PersonaListarUseCase.Ejecutar();
+    }
+
+    private async Task Aceptar()
+    {
+        _error = string.Empty;
+        _exito = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(_evento.Nombre) ||
+            string.IsNullOrWhiteSpace(_evento.Descripcion) ||
+            _evento.CupoMaximo <= 0 ||
+            _evento.PersonaId == 0 ||
+            _fecha is null ||
+            _hora is null)
+        {
+            _error = "Todos los campos son obligatorios y deben ser válidos.";
+            return;
+        }
+
+        _evento.FechaHoraInicio = _fecha.Value.Date + _hora.Value.ToTimeSpan();
+
+        _cargando = true;
+
+        try
+        {
+
+            var idUsuario = Sesion.UsuarioActual!.Id;
+
+            EventoDeportivoAltaUseCase.Ejecutar(_evento, idUsuario);
+            _exito = "¡Evento creado exitosamente!";
+
+            // Resetear campos
+            _evento = new EventoDeportivo { PersonaId = 0 };
+            _fecha = null;
+            _hora = null;
+
+            await Task.Delay(1500);
+            Navegador.NavigateTo("/listado-eventos");
+        }
+        catch (FalloAutorizacionException ex)
+        {
+            _error = $"Error de autorización: {ex.Message}";
+        }
+        catch (Exception ex)
+        {
+            _error = "Error al crear evento: " + (ex.InnerException?.Message ?? ex.Message);
+        }
+        finally
+        {
+            _cargando = false;
+        }
+    }
+
+    private void Cancelar()
+    {
+        Navegador.NavigateTo("/listado-eventos");
+    }
+}

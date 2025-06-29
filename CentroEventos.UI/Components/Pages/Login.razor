@@ -1,0 +1,101 @@
+﻿@page "/"
+@rendermode InteractiveServer
+@inject UsuarioLoginUseCase UsuarioLoginUseCase
+@inject NavigationManager NavigationManager
+@inject Sesion Sesion
+
+
+<PageTitle>Iniciar Sesión</PageTitle>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <h3 class="text-center mb-4">Iniciar Sesión</h3>
+
+            <form autocomplete="on" @onsubmit="IniciarSesion" @onsubmit:preventDefault="false">
+                <div class="card p-4 shadow">
+                    <div class="form-group">
+                        @if (!string.IsNullOrEmpty(_error))
+                        {
+                            <div class="alert alert-danger">@_error</div>
+                        }
+
+                        <label for="email">Usuario</label>
+                        <input type="email" attributes= "text"
+                            id="email"
+                            name="email"
+                            autocomplete="username"
+                            class="form-control"
+                            placeholder="Ingrese su email"
+                            @bind="_email"/>
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label for="password">Contraseña</label>
+                        <input type="password"
+                            id="password"
+                            name="password"
+                            class="form-control"
+                            placeholder="Ingrese su contraseña"
+                            autocomplete="current-password" 
+                            @bind="_password"/> 
+                    </div>
+
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary w-100" disabled="@_cargando">
+                            @if (_cargando)
+                            {
+                                <span class="spinner-border spinner-border-sm me-2"></span>
+                            }
+                            Ingresar
+                        </button>
+                    </div>
+
+                    <div class="mt-2 text-center">
+                        <a href="/crear-usuario">Crear usuario</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string _email = "";
+    private string _password = "";
+    private string _error = "";
+    private bool _cargando = false;
+
+    private async Task IniciarSesion()
+    {
+        _error = "";
+        _cargando = true;
+
+        try
+        {
+            var resultado = UsuarioLoginUseCase.Ejecutar(_email, _password);
+            
+            if (resultado.Exitoso)
+            {
+                await Task.Delay(1500);
+                Sesion.Iniciar(resultado.Usuario!);
+                StateHasChanged();
+                NavigationManager.NavigateTo("/home");
+            }
+            else
+            {
+                Console.WriteLine("Error al iniciar sesión: " + resultado.Error);
+                _error = resultado.Error ?? "Error desconocido al iniciar sesión";
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Excepción en login: " + ex.Message);
+            _error = "Error interno del sistema. Intente nuevamente.";
+        }
+        finally
+        {
+            _cargando = false;
+        }
+    }    
+}

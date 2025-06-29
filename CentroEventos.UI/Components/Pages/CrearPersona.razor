@@ -1,0 +1,172 @@
+@page "/crear-personas"
+@rendermode InteractiveServer
+@inject Sesion Sesion
+@inject NavigationManager Navegador
+@using CentroEventos.Aplicacion.Entidades
+@inject PersonaAltaUseCase personaAltaUseCase
+
+@if (!Sesion.EstaLogueado())
+{
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="alert alert-info text-center">
+                    <i class="bi bi-person-lock" style="font-size: 3rem; color: #084298;"></i>
+                    <h4 class="mt-3">Acceso Restringido</h4>
+                    <p class="mb-3">Debés iniciar sesión para acceder a esta página.</p>
+                    <div class="mt-4">
+                        <a href="/" class="btn btn-primary">
+                            <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else if (!Sesion.UsuarioActual?.Permisos.Contains(Permiso.PersonaAlta) == true)
+{
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="alert alert-warning text-center">
+                    <i class="bi bi-shield-exclamation" style="font-size: 3rem; color: #856404;"></i>
+                    <h4 class="mt-3">Acceso Denegado</h4>
+                    <p class="mb-3">No tenés permisos para acceder a esta página.</p>
+                    <p class="text-muted small">
+                        Se requiere permiso: <strong>Persona Alta</strong>
+                    </p>
+                    <div class="mt-4">
+                        <a href="/home" class="btn btn-primary">
+                            <i class="bi bi-house-door"></i> Volver al Inicio
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="mb-0">Crear Persona</h4>
+                    </div>
+                    <div class="card-body">
+                        @if (!string.IsNullOrEmpty(_error))
+                        {
+                            <div class="alert alert-danger">@_error</div>
+                        }
+
+                        @if (!string.IsNullOrEmpty(_exito))
+                        {
+                            <div class="alert alert-success">@_exito</div>
+                        }
+
+                        <div class="mb-3">
+                            <label class="form-label">Nombre</label>
+                            <input type="text" class="form-control" @bind="_persona.Nombre" placeholder="Ingresa tu nombre">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Apellido</label>
+                            <input type="text" class="form-control" @bind="_persona.Apellido" placeholder="Ingresa tu apellido">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="text" class="form-control" @bind="_persona.Email" placeholder="correo@ejemplo.com">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Telefono</label>
+                            <input type="text" class="form-control" @bind="_persona.Telefono" placeholder="Ingresa tu Telefono">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Dni</label>
+                            <input type="text" class="form-control" @bind="_persona.Dni" placeholder="Ingresa tu Dni">
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-primary" @onclick="Aceptar" disabled="@_cargando">
+                                @if (_cargando)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2"></span>
+                                }
+                                Crear Persona
+                            </button>
+                            <button class="btn btn-secondary" @onclick="Cancelar">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    Persona _persona = new Persona();
+
+    private string _error = string.Empty;
+    private string _exito = string.Empty;
+    private bool _cargando = false;
+
+    private async Task Aceptar()
+    {
+        _error = string.Empty;
+        _exito = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(_persona.Nombre) ||
+            string.IsNullOrWhiteSpace(_persona.Apellido) ||
+            string.IsNullOrWhiteSpace(_persona.Email) ||
+            string.IsNullOrWhiteSpace(_persona.Dni) ||
+            string.IsNullOrWhiteSpace(_persona.Telefono))
+        {
+            _error = "Todos los campos son obligatorios";
+            return;
+        }
+
+        _cargando = true;
+
+        try
+        {
+            var idUsuario = Sesion.UsuarioActual!.Id;
+            personaAltaUseCase.Ejecutar(_persona, idUsuario);
+
+            _exito = "¡Persona creada exitosamente!";
+            _persona = new Persona();
+
+            await Task.Delay(1500);
+            Navegador.NavigateTo("/listado-personas");
+        }
+        catch (DuplicadoException ex)
+        {
+            _error = $"Error de duplicación: {ex.Message}";
+        }
+        catch (OperacionInvalidaException ex)
+        {
+            _error = ex.Message;
+        }
+        catch (FalloAutorizacionException ex)
+        {
+            _error = $"Error de autorización: {ex.Message}";
+        }
+        catch (Exception)
+        {
+            _error = "Error inesperado al crear persona.";
+        }
+        finally
+        {
+            _cargando = false;
+        }
+    }
+
+    private void Cancelar()
+    {
+        Navegador.NavigateTo("/home");
+    }
+}

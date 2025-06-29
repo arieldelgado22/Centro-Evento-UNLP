@@ -1,0 +1,258 @@
+@page "/listado-personas"
+@rendermode InteractiveServer
+
+@inject NavigationManager NavigationManager
+@inject Sesion Sesion
+@inject PersonaListarUseCase personaListarUseCase
+@inject PersonaBajaUseCase personaBajaUseCase
+
+@inject NavigationManager NavigationManager
+@inject PersonaModificacionUseCase personaModificacionUseCase
+
+@using CentroEventos.Aplicacion.Entidades
+
+
+
+
+<h1>Listado de Persona</h1>
+<div class="container mt-4">
+        @if (!string.IsNullOrEmpty(mensajeError))
+{
+    <div class="alert alert-danger">
+        @mensajeError
+    </div>
+}
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Email</th>
+                <th>Dni</th>
+                <th>Teléfono</th>
+                @if (Sesion.UsuarioActual?.Permisos.Contains(Permiso.PersonaModificacion) == true ||
+                     Sesion.UsuarioActual?.Permisos.Contains(Permiso.PersonaBaja) == true)
+                {
+                    <th>Acción</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @if (_lista != null && _lista.Any())
+            {
+                @foreach (var per in _lista)
+                {
+                    <tr>
+                        <td>@per.Nombre</td>
+                        <td>@per.Apellido</td>
+                        <td>@per.Email</td>
+                        <td>@per.Dni</td>
+                        <td>@per.Telefono</td>
+                        @if (Sesion.UsuarioActual?.Permisos.Contains(Permiso.PersonaModificacion) == true ||
+                             Sesion.UsuarioActual?.Permisos.Contains(Permiso.PersonaBaja) == true)
+                        {
+                            <td>
+                                <div class="d-flex gap-2">
+                                @if (Sesion.UsuarioActual?.Permisos.Contains(Permiso.PersonaModificacion) == true)
+                                {
+                                    <a class="btn btn-sm btn-primary" @onclick="() => AbrirModalEditar(per)">Editar</a>
+                                }
+
+                                @if (Sesion.UsuarioActual?.Permisos.Contains(Permiso.PersonaBaja) == true)
+                                {
+                                   <button class="btn btn-sm btn-danger" @onclick="() => MostrarModalEliminar(per)">Eliminar</button>
+                                }
+                                </div>
+                            </td>
+                        }
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="7" class="text-center">No hay personas registradas.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+  @if (personaAEliminar != null)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmar eliminación</h5>
+                    <button type="button" class="btn-close" @onclick="CancelarEliminacion"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Estás seguro de que querés eliminar a <strong>@personaAEliminar.Nombre @personaAEliminar.Apellido</strong>?</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger" @onclick="EliminarConfirmado">Eliminar</button>
+                    <button class="btn btn-secondary" @onclick="CancelarEliminacion">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+    @if (personaSeleccionada != null)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Persona</h5>
+                    <button type="button" class="btn-close" @onclick="CerrarModal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-2">
+                        <label>Nombre</label>
+                        <input class="form-control" @bind="personaSeleccionada.Nombre" />
+                    </div>
+                    <div class="mb-2">
+                        <label>Apellido</label>
+                        <input class="form-control" @bind="personaSeleccionada.Apellido" />
+                    </div>
+                    <div class="mb-2">
+                        <label>Email</label>
+                        <input class="form-control" @bind="personaSeleccionada.Email" />
+                    </div>
+                    <div class="mb-2">
+                        <label>DNI</label>
+                        <input class="form-control" @bind="personaSeleccionada.Dni" />
+                    </div>
+                    <div class="mb-2">
+                        <label>Teléfono</label>
+                        <input class="form-control" @bind="personaSeleccionada.Telefono" />
+                    </div>
+                    @if (!string.IsNullOrEmpty(mensajeErrorModal))
+                    {
+                        <div class="alert alert-danger">@mensajeErrorModal</div>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" @onclick="GuardarCambios">Guardar</button>
+                    <button class="btn btn-secondary" @onclick="CerrarModal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+    @if (Sesion.UsuarioActual?.Permisos.Contains(Permiso.PersonaAlta) == true)
+    {
+        <a class="btn btn-sm btn-primary" href="/crear-personas">Agregar Persona</a>
+    }
+</div>
+
+@code {
+    List<Persona> _lista = new();
+    Persona? personaSeleccionada;
+    string? mensajeError;
+    string? mensajeErrorModal;
+   Persona? personaAEliminar = null;
+    protected override void OnInitialized()
+    {
+        _lista = personaListarUseCase.Ejecutar();
+    }
+
+    private void AbrirModalEditar(Persona persona)
+    {
+        // Clonamos para no editar directamente hasta confirmar
+        personaSeleccionada = new Persona
+        {
+            Id = persona.Id,
+            Nombre = persona.Nombre,
+            Apellido = persona.Apellido,
+            Email = persona.Email,
+            Dni = persona.Dni,
+            Telefono = persona.Telefono
+        };
+        mensajeErrorModal = null;
+    }
+
+    private void CerrarModal()
+    {
+        personaSeleccionada = null;
+        mensajeErrorModal = null;
+    }
+
+    private void GuardarCambios()
+    {
+        mensajeErrorModal = null;
+
+        try
+        {
+            var idUsuario = Sesion.UsuarioActual?.Id ?? 0;
+            personaModificacionUseCase.Ejecutar(personaSeleccionada!,idUsuario);
+
+         
+            _lista = personaListarUseCase.Ejecutar();
+
+            personaSeleccionada = null; // cerrar modal
+        }
+     catch (DuplicadoException ex)
+        {
+            mensajeErrorModal = $"Error de autorización: {ex.Message}";
+        }
+        catch (OperacionInvalidaException ex)
+        {
+            mensajeErrorModal = ex.Message;
+        }
+          catch (FalloAutorizacionException ex)
+        {
+            mensajeErrorModal = $"Error de autorización: {ex.Message}";
+        }
+        catch (Exception)
+        {
+            mensajeErrorModal = "Error inesperado al eliminar persona.";
+        }
+    }
+
+private void MostrarModalEliminar(Persona persona)
+{
+    personaAEliminar = persona;
+}
+
+private void CancelarEliminacion()
+{
+    personaAEliminar = null;
+}
+
+private void EliminarConfirmado()
+{
+    if (personaAEliminar != null)
+    {
+        EliminarPersona(personaAEliminar.Id);
+        personaAEliminar = null;
+    }
+}
+
+    private void EliminarPersona(int id)
+    {
+        mensajeError = null;
+
+        try
+        {
+            var idUsuario = Sesion.UsuarioActual?.Id ?? 0;
+            personaBajaUseCase.Ejecutar(id, idUsuario);
+            _lista = _lista.Where(p => p.Id != id).ToList();
+        }
+        catch (FalloAutorizacionException ex)
+        {
+            mensajeError = $"Error de autorización: {ex.Message}";
+        }
+        catch (OperacionInvalidaException ex)
+        {
+            mensajeError = ex.Message;
+        }
+        catch (Exception)
+        {
+            mensajeError = "Error inesperado al eliminar persona.";
+        }
+    }
+}
