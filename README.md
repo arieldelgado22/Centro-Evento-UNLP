@@ -71,9 +71,11 @@ Feel free to contribute with ideas, improvements or by reporting issues!
 ## 📸 Capturas de pantalla / Screenshots
 
 
-![{F724F878-1B45-440A-85D3-4D7D7E424D93}](https://github.com/user-attachments/assets/89ea5a93-4e3d-4227-8358-f3052e0f52c2)
-![{7BE797B0-14F6-4FE2-9E90-F34D84734932}](https://github.com/user-attachments/assets/6573aca4-8ac0-442f-9cf0-6f8d0007115f)
-![{CC9F4B89-B1B7-4353-9449-C0799383FCE1}](https://github.com/user-attachments/assets/93ad19cf-28aa-4a2e-a0ab-bb875e5727be)
-![{8E5E6771-73CB-40C1-8758-14A912A631B7}](https://github.com/user-attachments/assets/53db90ee-c980-46da-acb1-08595db43c7d)
+![{B997967F-18DC-4C5E-A42F-845AE18F83AA}](https://github.com/user-attachments/assets/a7401364-46ec-4580-9fb2-fd27880f3c2e)
+![{CFF0173D-CEDE-4B1D-8FA0-E5B44D7DA773}](https://github.com/user-attachments/assets/8a9f1429-2e9c-4d72-b53c-cf9de42ba8f3)
+![{2F1A59BC-4B83-409E-A678-F6BDB2C6BF9E}](https://github.com/user-attachments/assets/4650c3ef-f292-49c8-b07b-a95bc4423641)
+![{6A477073-A9EC-4033-94A2-4D8172ED9D19}](https://github.com/user-attachments/assets/451e0ec9-9d2d-49b1-8022-d691966af1e9)
+
+
 
 
