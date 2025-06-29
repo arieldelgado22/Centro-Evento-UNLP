@@ -68,16 +68,11 @@ Taiga
 This project was developed by UNLP students.
 Feel free to contribute with ideas, improvements or by reporting issues!
 
-## 📸 Capturas de pantalla
-
-### 🏠 Pantalla de inicio / Login
+## 📸 Capturas de pantalla / Screenshots
 
 
 ![{F724F878-1B45-440A-85D3-4D7D7E424D93}](https://github.com/user-attachments/assets/89ea5a93-4e3d-4227-8358-f3052e0f52c2)
-
 ![{7BE797B0-14F6-4FE2-9E90-F34D84734932}](https://github.com/user-attachments/assets/6573aca4-8ac0-442f-9cf0-6f8d0007115f)
-
-### 🔒 Control de accesos por roles
 ![{CC9F4B89-B1B7-4353-9449-C0799383FCE1}](https://github.com/user-attachments/assets/93ad19cf-28aa-4a2e-a0ab-bb875e5727be)
 ![{8E5E6771-73CB-40C1-8758-14A912A631B7}](https://github.com/user-attachments/assets/53db90ee-c980-46da-acb1-08595db43c7d)
 
