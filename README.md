@@ -28,9 +28,11 @@ Este proyecto fue realizado como parte de la materia **Seminario de Lenguaje .NE
 Este proyecto fue desarrollado por estudiantes de la UNLP.
 Si querés aportar ideas, mejoras o reportar errores, ¡estás más que bienvenido!
 
-  
 
-  Sports Center - .NET Language Seminar Project (UNLP)
+🇬🇧 English Version
+Sports Center - .NET Language Seminar Project (UNLP)
+
+   Sports Center - .NET Language Seminar Project (UNLP)
 Web application developed with .NET and Blazor for managing a sports center.
 Includes user login, sports event management, and access control based on roles.
 
