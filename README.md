@@ -1,4 +1,6 @@
-# Centro Deportivo - Proyecto Seminario Lenguaje .NET (UNLP)
+
+![{4E548EB9-E658-4EBF-A803-812B673BF8B9}](https://github.com/user-attachments/assets/8686b422-ba45-4235-af11-32081efb1174)
+
 
 Aplicación web desarrollada con .NET y Blazor para la gestión de un centro deportivo.  
 Incluye sistema de login, administración de eventos deportivos y control de accesos para distintos tipos de usuarios.
