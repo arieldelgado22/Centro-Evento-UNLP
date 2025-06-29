@@ -20,10 +20,10 @@ Este proyecto fue realizado como parte de la materia **Seminario de Lenguaje .NE
 - .NET 8
 - Blazor Server
 - Entity Framework Core
-- SQL Server
+- SQLite
 - GitHub
 - Taiga
-- 
+
 🙌 Contribuciones
 Este proyecto fue desarrollado por estudiantes de la UNLP.
 Si querés aportar ideas, mejoras o reportar errores, ¡estás más que bienvenido!
@@ -52,13 +52,13 @@ Version control with GitHub
 Agile project management with Taiga
 
 🛠️ Technologies
-.NET 7 / 8
+.NET 8
 
 Blazor Server
 
 Entity Framework Core
 
-SQL Server
+SQLite
 
 GitHub
 
