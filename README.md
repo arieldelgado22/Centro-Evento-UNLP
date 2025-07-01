@@ -6,6 +6,10 @@ Incluye sistema de login, administración de eventos deportivos y control de acc
 
 Este proyecto fue realizado como parte de la materia **Seminario de Lenguaje .NET** de la **Facultad de Informática - UNLP**.
 
+## 🌐 Sitio desplegado
+
+[Ver sitio en Render](https://centro-evento-unlp.onrender.com/)
+
 ## 🚀 Características
 
 - Login de usuarios
